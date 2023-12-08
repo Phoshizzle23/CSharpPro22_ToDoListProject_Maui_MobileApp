@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:ToDoListApp.Views"
+    xmlns:ios="clr-namespace:Microsoft.Maui.Controls.PlatformConfiguration.iOSSpecific;assembly=Microsoft.Maui.Controls"
+    x:Class="ToDoListApp.Views.TodoListPage"
+    x:Name="todoListPage"
+    Title="Home"
+    Shell.PresentationMode="ModalAnimated">
+    <ContentPage.ToolbarItems>
+
+        <ToolbarItem Clicked="MarkSelectedItemsComplete" IconImageSource="donetoolbar.png"/>
+        <ToolbarItem Clicked="DeleteSelectedItems" IconImageSource="trash.png"/>
+        <ToolbarItem Clicked="OnItemAdded" IconImageSource="icon.png"/>
+        <ToolbarItem Clicked="OpenMenu" IconImageSource="menu.png"/>
+
+    </ContentPage.ToolbarItems>
+
+    <Grid BackgroundColor="Transparent">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- Header Grid -->
+        <!--<views:HeaderGrid x:Name="HeaderGrid" Grid.Row="0"/>-->
+
+        <Frame HeightRequest="40" Grid.Row="0" Margin="5" Padding="5" Style="{StaticResource CustomFrame}" BackgroundColor="{OnPlatform iOS=Transparent, Android={StaticResource OffWhite}}">
+            <HorizontalStackLayout>
+                <!-- Search Bar -->
+                <SearchBar Style="{DynamicResource SearchBarHome}" HorizontalOptions="StartAndExpand" Grid.Row="0" BackgroundColor="{OnPlatform iOS={DynamicResource OffWhite2}}"
+                           Placeholder="Search" x:Name="SearchBar" TextChanged="SearchBar_TextChangedAsync" ios:SearchBar.SearchBarStyle="Minimal"/>
+
+                <!-- Sort Button -->
+                <AbsoluteLayout VerticalOptions="Center" Margin="0" HeightRequest="40">
+                    <ImageButton Clicked="SortByDateClicked" Source="sort.png" BackgroundColor="Transparent"
+                                 BorderColor="Transparent" HorizontalOptions="End" Margin="0,0,10,0"
+                                 AbsoluteLayout.LayoutBounds="0.2, 0.5, 30, 35" AbsoluteLayout.LayoutFlags="PositionProportional"/>
+                </AbsoluteLayout>
+            </HorizontalStackLayout>
+        </Frame>
+
+        <ListView x:Name="listView" Grid.Row="1" Margin="10" ItemSelected="OnListItemSelected" RowHeight="115" SeparatorVisibility="None"
+                  CachingStrategy="RecycleElement">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Border Padding="5,0,0,0" Margin="5">
+                            <Grid RowSpacing="0" ColumnSpacing="0">
+                            <Grid.RowDefinitions>
+                                    <RowDefinition Height="35" />
+                                    <RowDefinition Height="30" />
+                                    <RowDefinition Height="20" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="50" />
+                                    <ColumnDefinition Width="150" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="20,0,0,0" HorizontalOptions="StartAndExpand" VerticalOptions="End"
+                                       Text="{Binding Name}" LineBreakMode="TailTruncation" FontSize="20" FontFamily="Inter-Bold" />
+
+                                <CheckBox Grid.Row="1" Grid.Column="0" Margin="-6,0,0,0" x:Name="SelectedBox" IsChecked="{Binding IsSelected}" Focused="OnCheckBoxChecked" Unfocused="OnCheckBoxUnchecked"/>
+
+                                <Label Grid.ColumnSpan="5" Grid.Row="2" Grid.Column="1" HorizontalOptions="StartAndExpand" LineBreakMode="TailTruncation"
+                                       Margin="20,2,0,0" VerticalOptions="Start" FontSize="Body" WidthRequest="250"
+                                       Text="{Binding Notes}" FontFamily="Inter-Regular" />
+
+                                <Frame Grid.Row="1" Grid.Column="1" WidthRequest="100" Padding="7,0,0,0" Margin="-10,0,0,0" HeightRequest="25" BackgroundColor="{DynamicResource Gray100}" BorderColor="Transparent">
+                                    <Label HorizontalOptions="StartAndExpand" VerticalOptions="Center" WidthRequest="90" TextColor="Black" FontFamily="Inter-Regular">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding Date, StringFormat='{0:MMM dd, HH:mm}'}" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </Frame>
+ 
+                                <Frame Grid.Row="1" Grid.Column="2" WidthRequest="70" Padding="0,0,0,0" Margin="0,0,0,0" HeightRequest="25" BorderColor="Transparent">
+                                    <Frame.Triggers>
+
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Priority}" Value="High">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource HighPriorityColor}" />
+                                        </DataTrigger>
+
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Priority}" Value="Medium">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource MediumPriorityColor}" />
+                                        </DataTrigger>
+
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Priority}" Value="Low">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource LowPriorityColor}" />
+                                        </DataTrigger>
+
+                                        <DataTrigger TargetType="Frame" Binding="{Binding Priority}" Value="Critical">
+                                            <Setter Property="BackgroundColor" Value="{DynamicResource CriticalPriorityColor}" />
+                                        </DataTrigger>
+                                    </Frame.Triggers>
+                                    <Label HorizontalOptions="Center" VerticalOptions="Center" TextColor="Black" FontFamily="Inter-Regular" Text="{Binding Priority}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding Priority}" Value="Critical">
+                                                <Setter Property="TextColor" Value="White" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                </Frame>
+
+                                <Image Grid.Row="1" Grid.Column="4" HeightRequest="50" Margin="0,0,10,0" Aspect="AspectFit" x:Name="Doneimg">
+                                    <Image.Triggers>
+                                        <DataTrigger TargetType="Image" Binding="{Binding Done}" Value="True">
+                                            <Setter Property="Source" Value="done.png" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Image" Binding="{Binding Done}" Value="False">
+                                            <Setter Property="Source" Value="notdone.png" />
+                                        </DataTrigger>
+                                    </Image.Triggers>
+                                </Image>
+                            </Grid>
+                        </Border>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</ContentPage>
